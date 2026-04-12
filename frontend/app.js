@@ -1,7 +1,15 @@
 import { query } from '../query.js'
-import { movies } from '../data.js'
 
 const container = document.getElementById('movies')
+
+let movies = [] 
+
+fetch('../movies.json')
+  .then(res => res.json())
+  .then(data => {
+    movies = data
+    render(movies)
+  })
 
 const render = (data) => {
   container.innerHTML = data.map(m => `
@@ -30,6 +38,3 @@ window.runQuery = () => {
 
   render(q.execute())
 }
-
-// render inicial
-render(movies)
