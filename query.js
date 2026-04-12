@@ -75,6 +75,42 @@ const createQuery = (data, operations) => ({
           ...resolveAggregations(aggregationDefinitions, group.values)
         }))
     ]),
+  
+  limit: (n) =>
+    createQuery(data, [
+      ...operations,
+      (rows) => rows.slice(0, n)
+    ]),
+  
+  skip: (n) =>
+    createQuery(data, [
+      ...operations,
+      (rows) => rows.slice(n)
+    ]),
+  
+  distinct: (field) =>
+    createQuery(data, [
+      ...operations,
+      (rows) =>
+        rows.reduce((acc, row) => {
+          const exists = acc.some((r) => r[field] === row[field])
+          return exists ? acc : [...acc, row]
+        }, [])
+    ]),
+  
+  join: (otherData, localKey, foreignKey) =>
+    createQuery(data, [
+      ...operations,
+      (rows) =>
+        rows.flatMap((row) =>
+          otherData
+            .filter((item) => item[foreignKey] === row[localKey])
+            .map((match) => ({
+              ...row,
+              joined: match
+            }))
+        )
+    ]),
 
   execute: () =>
     operations.reduce((acc, operation) => operation(acc), data)
