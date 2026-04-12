@@ -1,5 +1,10 @@
 import { query } from './query.js';
-import { movies } from './data.js';
+
+import fs from 'fs'
+
+const movies = JSON.parse(
+  fs.readFileSync('./movies.json', 'utf-8')
+)
 
 const printResult = (title, result) => {
   console.log(`\n=== ${title} ===`)

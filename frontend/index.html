@@ -8,28 +8,81 @@
 </head>
 <body>
 
+  <!-- LOGO -->
   <h1 class="logo">METFLIX</h1>
 
-  <div class="filters">
-    <select id="genre">
-      <option value="">Todos</option>
-      <option value="Sci-Fi">Sci-Fi</option>
-      <option value="Drama">Drama</option>
-      <option value="Romance">Romance</option>
-    </select>
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="layout">
 
-    <input id="rating" type="number" step="0.1" placeholder="Rating mínimo">
+    <!-- IZQUIERDA: PELÍCULAS -->
+    <div class="movies-section">
 
-    <select id="order">
-      <option value="">Orden</option>
-      <option value="asc">Rating ↑</option>
-      <option value="desc">Rating ↓</option>
-    </select>
+      <!-- FILTROS -->
+      <div class="filters">
+        <select id="genre">
+          <option value="">Todos</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Drama">Drama</option>
+          <option value="Romance">Romance</option>
+        </select>
 
-    <button onclick="runQuery()">Filtrar</button>
+        <input id="rating" type="number" step="0.1" placeholder="Rating mínimo">
+
+        <select id="order">
+          <option value="">Orden</option>
+          <option value="asc">Rating ↑</option>
+          <option value="desc">Rating ↓</option>
+        </select>
+
+        <button onclick="runQuery()">Filtrar</button>
+      </div>
+
+      <!-- GRID DE PELÍCULAS -->
+      <div id="movies" class="grid"></div>
+
+    </div>
+
+    <!-- DERECHA: EXPLICACIÓN -->
+    <div class="info-section">
+
+      <h2>🧠 Motor de consultas</h2>
+
+      <p>
+        Este proyecto implementa un motor de consultas en memoria inspirado en SQL,
+        utilizando programación funcional. Las consultas se construyen como un pipeline
+        de transformaciones.
+      </p>
+
+      <ul>
+        <li><strong>query(data)</strong>: punto de entrada</li>
+        <li><strong>where</strong>: filtra datos</li>
+        <li><strong>select</strong>: selecciona campos</li>
+        <li><strong>orderBy</strong>: ordena resultados</li>
+        <li><strong>groupBy</strong>: agrupa datos</li>
+        <li><strong>aggregate</strong>: aplica funciones a grupos</li>
+        <li><strong>execute</strong>: ejecuta la consulta</li>
+      </ul>
+
+      <p>
+        Internamente, cada operación agrega una función a un pipeline. La ejecución
+        ocurre solo al llamar a <strong>execute()</strong>.
+      </p>
+
+      <pre>
+query(data)
+  .where(m => m.rating > 8)
+  .select(['title', 'rating'])
+  .orderBy('rating', 'desc')
+  .execute()
+      </pre>
+
+      <p>
+        Esto se traduce en la aplicación secuencial de funciones usando <strong>reduce</strong>.
+      </p>
+
+    </div>
+
   </div>
-
-  <div id="movies" class="grid"></div>
 
   <script type="module" src="app.js"></script>
 </body>

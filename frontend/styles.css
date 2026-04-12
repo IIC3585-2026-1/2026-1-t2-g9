@@ -6,9 +6,55 @@ body {
   padding: 20px;
 }
 
-h1 {
+/* LOGO */
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
   color: #e50914;
-  margin-bottom: 20px;
+  font-size: 60px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(229, 9, 20, 0.7);
+}
+
+/* 🔹 LAYOUT 2 COLUMNAS */
+.layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+}
+
+/* IZQUIERDA */
+.movies-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* DERECHA */
+.info-section {
+  background: #181818;
+  padding: 20px;
+  border-radius: 10px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.info-section h2 {
+  color: #e50914;
+  margin-bottom: 10px;
+}
+
+.info-section ul {
+  padding-left: 20px;
+}
+
+.info-section pre {
+  background: #000;
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-top: 10px;
 }
 
 /* FILTROS */
@@ -20,16 +66,6 @@ h1 {
   background: #181818;
   padding: 15px;
   border-radius: 10px;
-}
-
-/* LOGO METFLIX */
-.logo {
-  font-family: 'Bebas Neue', sans-serif;
-  color: #e50914;
-  font-size: 60px;
-  text-align: center;
-  letter-spacing: 3px;
-  margin-bottom: 30px;
 }
 
 /* INPUTS Y SELECTS */
@@ -44,13 +80,13 @@ h1 {
   transition: 0.2s;
 }
 
-/* HOVER */
+/* HOVER INPUT */
 .filters select:hover,
 .filters input:hover {
   border-color: #555;
 }
 
-/* FOCUS */
+/* FOCUS INPUT */
 .filters select:focus,
 .filters input:focus {
   border-color: #e50914;
@@ -85,10 +121,10 @@ h1 {
   color: #aaa;
 }
 
-/* 🔹 GRID */
+/* 🔹 GRID (5 columnas) */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 15px;
 }
 
@@ -123,4 +159,21 @@ h1 {
 /* HOVER IMAGEN */
 .card:hover img {
   transform: scale(1.1);
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
