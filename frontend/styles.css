@@ -177,3 +177,57 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+
+.bonus-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.tab-btn {
+  background: #222;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+  background: #e50914;
+  color: white;
+  border-color: #e50914;
+}
+
+#bonus-result {
+  background: #000;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#bonus-result table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#bonus-result th {
+  color: #e50914;
+  text-align: left;
+  border-bottom: 1px solid #333;
+  padding: 4px 8px;
+}
+
+#bonus-result td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #1a1a1a;
+  color: #ccc;
+}
