@@ -1,0 +1,32 @@
+body {
+  background: #141414;
+  color: white;
+  font-family: Arial;
+  padding: 20px;
+}
+
+h1 {
+  color: #e50914;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: #222;
+  padding: 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background: #333;
+}
