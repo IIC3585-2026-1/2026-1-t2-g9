@@ -19,30 +19,42 @@ const longestMovies = query(movies)
 
 const moviesByGenre = query(movies)
   .groupBy('genre')
-  .aggregate({
-    count: (items) => items.length,
-    averageRating: (items) =>
+  .aggregate([
+    {
+      name: 'count',
+      aggregationFn: (items) => items.length
+    },
+    {
+      name: 'averageRating',
+      aggregationFn: (items) =>
       Number(
         (
           items.reduce((sum, movie) => sum + movie.rating, 0) / items.length
         ).toFixed(2)
       )
-  })
+    }
+  ])
   .orderBy('averageRating', 'desc')
   .execute()
 
 const moviesByCountry = query(movies)
   .where((movie) => movie.year > 2000)
   .groupBy('country')
-  .aggregate({
-    count: (items) => items.length,
-    averageDuration: (items) =>
+  .aggregate([
+    {
+      name: 'count',
+      aggregationFn: (items) => items.length
+    },
+    {
+      name: 'averageDuration',
+      aggregationFn: (items) =>
       Number(
         (
           items.reduce((sum, movie) => sum + movie.duration, 0) / items.length
         ).toFixed(2)
       )
-  })
+    }
+  ])
   .orderBy('averageDuration', 'desc')
   .execute()
 

@@ -16,22 +16,22 @@ const compareValues = (direction) => (left, right) => {
   return direction === 'desc' ? ascendingResult * -1 : ascendingResult
 }
 
-const formatGroupedRows = (groupedRows) =>
-  Object.entries(groupedRows).map(([key, values]) => ({ key, values }))
-
 const addRowToGroup = (field) => (groups, row) => {
   const key = row[field]
-  const groupedRows = groups[key] ?? []
+  const groupExists = groups.some((group) => group.key === key)
 
-  return {
-    ...groups,
-    [key]: [...groupedRows, row]
-  }
+  return groupExists
+    ? groups.map((group) =>
+      group.key === key
+        ? { ...group, values: [...group.values, row] }
+        : group
+    )
+    : [...groups, { key, values: [row] }]
 }
 
-const resolveAggregations = (aggregations, values) =>
-  Object.entries(aggregations).reduce(
-    (result, [name, aggregationFn]) => ({
+const resolveAggregations = (aggregationDefinitions, values) =>
+  aggregationDefinitions.reduce(
+    (result, { name, aggregationFn }) => ({
       ...result,
       [name]: aggregationFn(values)
     }),
@@ -63,19 +63,16 @@ const createQuery = (data, operations) => ({
   groupBy: (field) =>
     createQuery(data, [
       ...operations,
-      (rows) =>
-        formatGroupedRows(
-          rows.reduce(addRowToGroup(field), {})
-        )
+      (rows) => rows.reduce(addRowToGroup(field), [])
     ]),
 
-  aggregate: (aggregations) =>
+  aggregate: (aggregationDefinitions) =>
     createQuery(data, [
       ...operations,
       (groups) =>
         groups.map((group) => ({
           key: group.key,
-          ...resolveAggregations(aggregations, group.values)
+          ...resolveAggregations(aggregationDefinitions, group.values)
         }))
     ]),
 
