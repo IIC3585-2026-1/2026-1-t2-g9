@@ -1,32 +1,126 @@
+/* GLOBAL */
 body {
   background: #141414;
   color: white;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   padding: 20px;
 }
 
 h1 {
   color: #e50914;
-}
-
-.filters {
   margin-bottom: 20px;
 }
 
+/* FILTROS */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+  background: #181818;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* LOGO METFLIX */
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  color: #e50914;
+  font-size: 60px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+
+/* INPUTS Y SELECTS */
+.filters select,
+.filters input {
+  background: #222;
+  color: white;
+  border: 1px solid #333;
+  padding: 10px 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.2s;
+}
+
+/* HOVER */
+.filters select:hover,
+.filters input:hover {
+  border-color: #555;
+}
+
+/* FOCUS */
+.filters select:focus,
+.filters input:focus {
+  border-color: #e50914;
+  box-shadow: 0 0 5px rgba(229, 9, 20, 0.5);
+}
+
+/* BOTÓN */
+.filters button {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* HOVER BOTÓN */
+.filters button:hover {
+  background: #f6121d;
+  transform: scale(1.05);
+}
+
+/* CLICK BOTÓN */
+.filters button:active {
+  transform: scale(0.98);
+}
+
+/* PLACEHOLDER */
+.filters input::placeholder {
+  color: #aaa;
+}
+
+/* 🔹 GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
 }
 
+/* 🔹 TARJETAS */
 .card {
   background: #222;
-  padding: 15px;
   border-radius: 10px;
+  overflow: hidden;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+/* IMAGEN */
+.card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
   transition: 0.3s;
 }
 
+/* INFO */
+.card .info {
+  padding: 10px;
+}
+
+/* HOVER TARJETA */
 .card:hover {
   transform: scale(1.05);
   background: #333;
+}
+
+/* HOVER IMAGEN */
+.card:hover img {
+  transform: scale(1.1);
 }
