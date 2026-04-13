@@ -8,7 +8,7 @@ fetch('../movies.json')
   .then(res => res.json())
   .then(data => {
     movies = data
-    render(movies)
+    renderPaginated()
     showOperations('query')
   })
 
@@ -213,6 +213,75 @@ document.addEventListener('mouseup', () => {
   document.body.style.cursor = ''
   document.body.style.userSelect = ''
 })
+
+let currentPage = 1
+let pageSize = 15
+
+const renderPaginated = () => {
+  const genre = document.getElementById('genre').value
+  const rating = Number(document.getElementById('rating').value)
+  const order = document.getElementById('order').value
+
+  let q = query(movies)
+  if (genre) q = q.where(m => m.genre === genre)
+  if (rating) q = q.where(m => m.rating >= rating)
+  if (order) q = q.orderBy('rating', order)
+
+  const all = q.execute()
+  const total = all.length
+  const totalPages = Math.ceil(total / pageSize)
+
+  currentPage = Math.min(currentPage, totalPages)
+
+  const page = q
+    .skip((currentPage - 1) * pageSize)
+    .limit(pageSize)
+    .execute()
+
+  render(page)
+  renderPagination(totalPages)
+  renderPageQuery(currentPage, totalPages)
+}
+
+const renderPagination = (totalPages) => {
+  const container = document.getElementById('pagination')
+  if (!container) return
+
+  container.innerHTML = `
+    <button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Anterior</button>
+    ${Array.from({ length: totalPages }, (_, i) => i + 1).map(p => `
+      <button class="${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>
+    `).join('')}
+    <button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>
+  `
+}
+
+const renderPageQuery = (page, totalPages) => {
+  const el = document.getElementById('page-query')
+  if (!el) return
+  el.textContent =
+`query(movies)
+  .skip(${(page - 1) * pageSize})
+  .limit(${pageSize})
+  .execute()
+// página ${page} de ${totalPages}`
+}
+
+window.goToPage = (page) => {
+  currentPage = page
+  renderPaginated()
+}
+
+window.runQuery = () => {
+  currentPage = 1
+  renderPaginated()
+}
+
+window.changePageSize = () => {
+  pageSize = Number(document.getElementById('page-size').value)
+  currentPage = 1
+  renderPaginated()
+}
 
 const originalRender = render
 fetch('../movies.json')

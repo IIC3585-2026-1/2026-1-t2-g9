@@ -39,6 +39,19 @@
 
       <!-- GRID DE PELÍCULAS -->
       <div id="movies" class="grid"></div>
+      <div id="pagination" class="pagination"></div>
+      <div class="pagination-controls">
+        <div class="page-size-selector">
+          <label>Por página:</label>
+          <select id="page-size" onchange="changePageSize()">
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15" selected>15</option>
+          </select>
+        </div>
+        <div id="pagination" class="pagination"></div>
+      </div>
 
     </div>
     <div class="resizer" id="resizer"></div>
