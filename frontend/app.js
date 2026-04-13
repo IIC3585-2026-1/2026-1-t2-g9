@@ -9,7 +9,7 @@ fetch('../movies.json')
   .then(data => {
     movies = data
     render(movies)
-    showBonus('limit')
+    showBonus('query')
   })
 
 const render = (data) => {
@@ -48,22 +48,54 @@ const orders = [
 ]
 
 const bonusExamples = {
+  query: {
+    desc: 'Punto de entrada. Recibe un array y protege el original con spread.',
+    impl: `export const query = (data) => createQuery([...data], [])`
+  },
+  where: {
+    desc: 'Filtra elementos según una función predicado.',
+    impl: `where: (predicate) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.filter(predicate)\n  ]),`
+  },
+  select: {
+    desc: 'Retorna solo las propiedades indicadas de cada fila.',
+    impl: `select: (fields) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.map(projectFields(fields))\n  ]),\n\nconst projectFields = (fields) => (row) =>\n  fields.reduce(\n    (projectedRow, field) => ({ ...projectedRow, [field]: row[field] }),\n    {}\n  )`
+  },
+  orderBy: {
+    desc: 'Ordena los resultados por un campo en dirección ascendente o descendente.',
+    impl: `orderBy: (field, direction = 'asc') =>\n  createQuery(data, [\n    ...operations,\n    (rows) => [...rows].sort((l, r) =>\n      compareValues(direction)(l[field], r[field])\n    )\n  ]),\n\nconst compareValues = (direction) => (left, right) => {\n  if (left === right) return 0\n  const asc = left > right ? 1 : -1\n  return direction === 'desc' ? ascendingResult * -1 : ascendingResult\n}`
+  },
+  groupBy: {
+    desc: 'Agrupa las filas por el valor de un campo.',
+    impl: `groupBy: (field) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.reduce(addRowToGroup(field), [])\n  ]),\n\nconst addRowToGroup = (field) => (groups, row) => {\n  const key = row[field]\n  const exists = groups.some(g => g.key === key)\n  return exists\n    ? groups.map(g => g.key === key\n        ? { ...g, values: [...g.values, row] }\n        : g)\n    : [...groups, { key, values: [row] }]\n}`
+  },
+  aggregate: {
+    desc: 'Aplica funciones de agregación a cada grupo. Acepta objeto o array.',
+    impl: `aggregate: (aggregationDefinitions) =>\n  createQuery(data, [\n    ...operations,\n    (groups) => groups.map(group => ({\n      key: group.key,\n      ...resolveAggregations(aggregationDefinitions, group.values)\n    }))\n  ]),\n\nconst resolveAggregations = (aggregationDefinitions, values) =>\n  aggregationDefinitions.reduce(\n    (result, { name, aggregationFn }) => ({\n      ...result,\n      [name]: aggregationFn(values)\n    }), {})\n}`
+  },
+  execute: {
+    desc: 'Ejecuta el pipeline aplicando todas las operaciones acumuladas con reduce.',
+    impl: `execute: () =>\n  operations.reduce((acc, operation) => operation(acc), data)`
+  },
   limit: {
+    desc: 'Recorta el array a los primeros n elementos usando slice. Útil para paginación o mostrar un top N.',
     code: `query(movies)\n  .orderBy('rating', 'desc')\n  .limit(3)\n  .execute()`,
     impl: `limit: (n) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.slice(0, n)\n  ]),`,
     run: () => query(movies).orderBy('rating', 'desc').limit(3).select(['title', 'rating']).execute()
   },
   skip: {
+    desc: 'Omite los primeros n elementos. Combinado con limit permite paginar.',
     code: `query(movies)\n  .orderBy('rating', 'desc')\n  .skip(3)\n  .limit(3)\n  .execute()`,
     impl: `skip: (n) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.slice(n)\n  ]),`,
     run: () => query(movies).orderBy('rating', 'desc').skip(3).limit(3).select(['title', 'rating']).execute()
   },
   distinct: {
+    desc: 'Elimina duplicados según un campo. Recorre el array con reduce y solo agrega una fila si el valor del campo no fue visto antes.',
     code: `query(movies)\n  .distinct('genre')\n  .select(['genre'])\n  .execute()`,
     impl: `distinct: (field) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.reduce((acc, row) => {\n      const exists = acc.some(r => r[field] === row[field])\n      return exists ? acc : [...acc, row]\n    }, [])\n  ]),`,
     run: () => query(movies).distinct('genre').select(['genre']).execute()
   },
   join: {
+    desc: 'INNER JOIN entre dos datasets. Combina cada fila con las coincidencias del otro array según las claves indicadas. Sin coincidencias, la fila desaparece.',
     code: `query(movies)\n  .join(orders, 'id', 'movieId')\n  .execute()`,
     impl: `join: (otherData, localKey, foreignKey) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.flatMap(row =>\n      otherData\n        .filter(item => item[foreignKey] === row[localKey])\n        .map(match => ({ ...row, joined: match }))\n    )\n  ]),`,
     run: () => query(movies).join(orders, 'id', 'movieId').execute()
@@ -85,13 +117,11 @@ window.showBonus = (key) => {
   document.querySelector(`.tab-btn[onclick="showBonus('${key}')"]`).classList.add('active')
 
   const example = bonusExamples[key]
+  document.getElementById('bonus-desc').textContent = example.desc
   document.getElementById('bonus-code').textContent = example.code
-  document.getElementById('bonus-impl').textContent = example.impl   // ← nueva línea
+  document.getElementById('bonus-impl').textContent = example.impl
   document.getElementById('bonus-result').innerHTML = renderBonusTable(example.run())
 }
 
-// Mostrar el primero por defecto cuando carguen los datos
 const originalRender = render
-fetch('../movies.json')  // ya tienes este fetch arriba, solo agrega esto al .then:
-// → al final del .then(data => { ... }) agrega:
-//    showBonus('limit')
+fetch('../movies.json')

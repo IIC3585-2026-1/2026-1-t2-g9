@@ -45,7 +45,7 @@
     <!-- DERECHA: EXPLICACIÓN -->
     <div class="info-section">
 
-      <h2>🧠 Motor de consultas</h2>
+      <h2>Motor de consultas</h2>
 
       <p>
         Este proyecto implementa un motor de consultas en memoria inspirado en SQL,
@@ -80,18 +80,28 @@ query(data)
         Esto se traduce en la aplicación secuencial de funciones usando <strong>reduce</strong>.
       </p>
 
-      <h2 style="color:#e50914; margin-top: 20px;">Bonus</h2>
+      <h2 style="color:#e50914; margin-top: 20px;">Operaciones</h2>
 
       <div class="bonus-tabs">
-        <button class="tab-btn active" onclick="showBonus('limit')">limit</button>
+        <button class="tab-btn active" onclick="showBonus('query')">query</button>
+        <button class="tab-btn" onclick="showBonus('where')">where</button>
+        <button class="tab-btn" onclick="showBonus('select')">select</button>
+        <button class="tab-btn" onclick="showBonus('orderBy')">orderBy</button>
+        <button class="tab-btn" onclick="showBonus('groupBy')">groupBy</button>
+        <button class="tab-btn" onclick="showBonus('aggregate')">aggregate</button>
+        <button class="tab-btn" onclick="showBonus('execute')">execute</button>
+        <button class="tab-btn" onclick="showBonus('limit')">limit</button>
         <button class="tab-btn" onclick="showBonus('skip')">skip</button>
         <button class="tab-btn" onclick="showBonus('distinct')">distinct</button>
         <button class="tab-btn" onclick="showBonus('join')">join</button>
       </div>
 
-      <pre id="bonus-code"></pre>
+      <p style="color:#aaa; font-size:12px; margin: 8px 0 4px;">Descripción:</p>
+      <div id="bonus-desc"></div>
       <p style="color:#aaa; font-size:12px; margin: 8px 0 4px;">Implementación:</p>
       <pre id="bonus-impl"></pre>
+      <p style="color:#aaa; font-size:12px; margin: 8px 0 4px;">Ejemplo:</p>
+      <pre id="bonus-code"></pre>
       <p style="color:#aaa; font-size:12px; margin: 8px 0 4px;">Resultado:</p>
       <div id="bonus-result"></div>
 
