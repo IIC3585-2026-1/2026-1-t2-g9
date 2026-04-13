@@ -6,7 +6,7 @@
 ### 2. Entrar a la carpeta
 
 ```bash
-cd 2026-1-t1-g9
+cd 2026-1-t2-g9
 ```
 
 ### 3. Iniciar servidor local
