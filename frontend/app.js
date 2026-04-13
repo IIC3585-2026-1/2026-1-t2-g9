@@ -197,7 +197,7 @@ resizer.addEventListener('mousedown', (e) => {
 
 document.addEventListener('mousemove', (e) => {
   if (!isResizing) return
-  const delta = startX - e.clientX  // invertido: mover izquierda = agrandar
+  const delta = startX - e.clientX
   const newWidth = Math.min(Math.max(startWidth + delta, 250), window.innerWidth * 0.6)
   infoSection.style.width = newWidth + 'px'
 })
