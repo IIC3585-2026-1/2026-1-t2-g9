@@ -29,14 +29,24 @@ const addRowToGroup = (field) => (groups, row) => {
     : [...groups, { key, values: [row] }]
 }
 
-const resolveAggregations = (aggregationDefinitions, values) =>
-  aggregationDefinitions.reduce(
-    (result, { name, aggregationFn }) => ({
+const resolveAggregations = (aggregationDefinitions, values) => {
+  if (Array.isArray(aggregationDefinitions)) {
+    return aggregationDefinitions.reduce(
+      (result, { name, aggregationFn }) => ({
+        ...result,
+        [name]: aggregationFn(values)
+      }),
+      {}
+    )
+  }
+  return Object.entries(aggregationDefinitions).reduce(
+    (result, [name, fn]) => ({
       ...result,
-      [name]: aggregationFn(values)
+      [name]: fn(values)
     }),
     {}
   )
+}
 
 const createQuery = (data, operations) => ({
 

@@ -50,31 +50,72 @@ const orders = [
 const operationsExamples = {
   query: {
     desc: 'Punto de entrada. Recibe un array y protege el original con spread.',
-    impl: `export const query = (data) => createQuery([...data], [])`
+    impl: `export const query = (data) => createQuery([...data], [])`,
+    code: `query(movies).execute()`,
+    run: () => query(movies).execute()
   },
   where: {
     desc: 'Filtra elementos según una función predicado.',
-    impl: `where: (predicate) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.filter(predicate)\n  ]),`
+    impl: `where: (predicate) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.filter(predicate)\n  ]),`,
+    code: `query(movies)\n  .where(movie => movie.rating >= 8)\n  .execute()`,
+    run: () => query(movies).where(movie => movie.rating >= 9).execute()
   },
   select: {
     desc: 'Retorna solo las propiedades indicadas de cada fila.',
-    impl: `select: (fields) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.map(projectFields(fields))\n  ]),\n\nconst projectFields = (fields) => (row) =>\n  fields.reduce(\n    (projectedRow, field) => ({ ...projectedRow, [field]: row[field] }),\n    {}\n  )`
+    impl: `select: (fields) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.map(projectFields(fields))\n  ]),\n\nconst projectFields = (fields) => (row) =>\n  fields.reduce(\n    (projectedRow, field) => ({ ...projectedRow, [field]: row[field] }),\n    {}\n  )`,
+    code: `query(movies)\n  .select(['title', 'rating'])\n  .execute()`,
+    run: () => query(movies).select(['title', 'rating']).execute()
   },
   orderBy: {
     desc: 'Ordena los resultados por un campo en dirección ascendente o descendente.',
-    impl: `orderBy: (field, direction = 'asc') =>\n  createQuery(data, [\n    ...operations,\n    (rows) => [...rows].sort((l, r) =>\n      compareValues(direction)(l[field], r[field])\n    )\n  ]),\n\nconst compareValues = (direction) => (left, right) => {\n  if (left === right) return 0\n  const asc = left > right ? 1 : -1\n  return direction === 'desc' ? ascendingResult * -1 : ascendingResult\n}`
+    impl: `orderBy: (field, direction = 'asc') =>\n  createQuery(data, [\n    ...operations,\n    (rows) => [...rows].sort((l, r) =>\n      compareValues(direction)(l[field], r[field])\n    )\n  ]),\n\nconst compareValues = (direction) => (left, right) => {\n  if (left === right) return 0\n  const asc = left > right ? 1 : -1\n  return direction === 'desc' ? ascendingResult * -1 : ascendingResult\n}`,
+    code: `query(movies)\n  .orderBy('rating', 'desc')\n  .execute()`,
+    run: () => query(movies).orderBy('rating', 'desc').execute()
   },
   groupBy: {
     desc: 'Agrupa las filas por el valor de un campo.',
-    impl: `groupBy: (field) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.reduce(addRowToGroup(field), [])\n  ]),\n\nconst addRowToGroup = (field) => (groups, row) => {\n  const key = row[field]\n  const exists = groups.some(g => g.key === key)\n  return exists\n    ? groups.map(g => g.key === key\n        ? { ...g, values: [...g.values, row] }\n        : g)\n    : [...groups, { key, values: [row] }]\n}`
+    impl: `groupBy: (field) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.reduce(addRowToGroup(field), [])\n  ]),\n\nconst addRowToGroup = (field) => (groups, row) => {\n  const key = row[field]\n  const exists = groups.some(g => g.key === key)\n  return exists\n    ? groups.map(g => g.key === key\n        ? { ...g, values: [...g.values, row] }\n        : g)\n    : [...groups, { key, values: [row] }]\n}`,
+    code: `query(movies)\n  .where(movie => movie.year > 2000)\n  .groupBy('genre')\n  .execute()`,
+    run: () =>
+      query(movies)
+        .where(movie => movie.year > 2000)
+        .groupBy('genre')
+        .execute()
+        .map(group => ({
+          genre: group.key,
+          count: group.values.length,
+          titles: group.values.map(v => v.title).join(', ')
+        }))
   },
   aggregate: {
-    desc: 'Aplica funciones de agregación a cada grupo. Acepta objeto o array.',
-    impl: `aggregate: (aggregationDefinitions) =>\n  createQuery(data, [\n    ...operations,\n    (groups) => groups.map(group => ({\n      key: group.key,\n      ...resolveAggregations(aggregationDefinitions, group.values)\n    }))\n  ]),\n\nconst resolveAggregations = (aggregationDefinitions, values) =>\n  aggregationDefinitions.reduce(\n    (result, { name, aggregationFn }) => ({\n      ...result,\n      [name]: aggregationFn(values)\n    }), {})\n}`
+    desc: 'Aplica funciones de agregación a cada grupo. Acepta objeto { nombre: fn } o array [{ name, aggregationFn }].',
+    impl: `aggregate: (defs) =>\n  createQuery(data, [\n    ...operations,\n    (groups) => groups.map(group => ({\n      key: group.key,\n      ...resolveAggregations(defs, group.values)\n    }))\n  ]),\n\nconst resolveAggregations = (defs, values) => {\n  if (Array.isArray(defs))\n    return defs.reduce((res, { name, aggregationFn }) => ({\n      ...res, [name]: aggregationFn(values)\n    }), {})\n  return Object.entries(defs).reduce((res, [name, fn]) => ({\n    ...res, [name]: fn(values)\n  }), {})\n}`,
+    code: `query(movies)\n  .groupBy('genre')\n  .aggregate({\n    count: items => items.length,\n    avgRating: items =>\n      Number(\n        (items.reduce((sum, m) => sum + m.rating, 0) / items.length).toFixed(2)\n      )\n  })\n  .execute()`,
+    run: () =>
+      query(movies)
+        .groupBy('genre')
+        .aggregate({
+          count: items => items.length,
+          avgRating: items =>
+            Number(
+              (items.reduce((sum, m) => sum + m.rating, 0) / items.length).toFixed(2)
+            )
+        })
+        .execute()
   },
   execute: {
     desc: 'Ejecuta el pipeline aplicando todas las operaciones acumuladas con reduce.',
-    impl: `execute: () =>\n  operations.reduce((acc, operation) => operation(acc), data)`
+    impl: `execute: () =>\n  operations.reduce((acc, operation) => operation(acc), data)`,
+    code: `query(movies)
+    .where(m => m.rating > 8.5)
+    .select(['title', 'rating'])
+    .execute()`,
+
+    run: () =>
+      query(movies)
+        .where(m => m.rating > 8.5)
+        .select(['title', 'rating'])
+        .execute()
   },
   limit: {
     desc: 'Recorta el array a los primeros n elementos usando slice. Útil para paginación o mostrar un top N.',
@@ -104,11 +145,25 @@ const operationsExamples = {
 }
 
 const renderOperationsTable = (data) => {
-  if (!data.length) return '<p style="color:#aaa">Sin resultados</p>'
-  const keys = Object.keys(data[0])
+  if (!data || !data.length) return '<p style="color:#aaa">Sin resultados</p>'
+  const first = data[0]
+  if ('values' in first && Array.isArray(first.values)) {
+    return `<table>
+      <tr><th>key</th><th>values (count)</th><th>muestra</th></tr>
+      ${data.map(group => `<tr>
+        <td>${group.key}</td>
+        <td>${group.values.length} items</td>
+        <td>${group.values.map(v => v.title || v.name || JSON.stringify(v)).join(', ').slice(0, 60)}…</td>
+      </tr>`).join('')}
+    </table>`
+  }
+  const keys = Object.keys(first)
   return `<table>
     <tr>${keys.map(k => `<th>${k}</th>`).join('')}</tr>
-    ${data.map(row => `<tr>${keys.map(k => `<td>${row[k]}</td>`).join('')}</tr>`).join('')}
+    ${data.map(row => `<tr>${keys.map(k => {
+      const val = row[k]
+      return `<td>${typeof val === 'object' ? JSON.stringify(val) : val}</td>`
+    }).join('')}</tr>`).join('')}
   </table>`
 }
 
