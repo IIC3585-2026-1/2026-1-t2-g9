@@ -136,7 +136,11 @@ const operationsExamples = {
     run: () => query(movies).distinct('genre').select(['genre']).execute()
   },
   join: {
-    desc: 'INNER JOIN entre dos datasets. Combina cada fila con las coincidencias del otro array según las claves indicadas. Sin coincidencias, la fila desaparece.',
+    desc: `Combinación entre dos datasets. Hay varios tipos: 
+    - INNER JOIN: Solo filas con coincidencias en ambos datasets. Sin coincidencia, la fila desaparece. 
+    - LEFT JOIN: Todas las filas del dataset izquierdo, con datos del derecho cuando hay coincidencia. Sin coincidencia, el lado derecho es null. 
+    - RIGHT JOIN: Todas las filas del dataset derecho, con datos del izquierdo cuando hay coincidencia. Sin coincidencia, el lado izquierdo es null. 
+    - FULL JOIN: Todas las filas de ambos datasets, con datos combinados cuando hay coincidencia. Sin coincidencia, el lado sin coincidencia es null.`,
     code: `query(movies)\n  .join(orders, 'id', 'movieId')\n  .execute()`,
     impl: `join: (otherData, localKey, foreignKey) =>\n  createQuery(data, [\n    ...operations,\n    (rows) => rows.flatMap(row =>\n      otherData\n        .filter(item => item[foreignKey] === row[localKey])\n        .map(match => ({ ...row, joined: match }))\n    )\n  ]),`,
     run: () => query(movies).join(orders, 'id', 'movieId').execute()
