@@ -9,7 +9,7 @@ fetch('../movies.json')
   .then(data => {
     movies = data
     render(movies)
-    showBonus('query')
+    showOperations('query')
   })
 
 const render = (data) => {
@@ -47,7 +47,7 @@ const orders = [
   { orderId: 3, movieId: 1, user: 'Carla' },
 ]
 
-const bonusExamples = {
+const operationsExamples = {
   query: {
     desc: 'Punto de entrada. Recibe un array y protege el original con spread.',
     impl: `export const query = (data) => createQuery([...data], [])`
@@ -103,7 +103,7 @@ const bonusExamples = {
   }
 }
 
-const renderBonusTable = (data) => {
+const renderOperationsTable = (data) => {
   if (!data.length) return '<p style="color:#aaa">Sin resultados</p>'
   const keys = Object.keys(data[0])
   return `<table>
@@ -112,15 +112,15 @@ const renderBonusTable = (data) => {
   </table>`
 }
 
-window.showBonus = (key) => {
+window.showOperations = (key) => {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'))
-  document.querySelector(`.tab-btn[onclick="showBonus('${key}')"]`).classList.add('active')
+  document.querySelector(`.tab-btn[onclick="showOperations('${key}')"]`).classList.add('active')
 
-  const example = bonusExamples[key]
-  document.getElementById('bonus-desc').textContent = example.desc
-  document.getElementById('bonus-code').textContent = example.code
-  document.getElementById('bonus-impl').textContent = example.impl
-  document.getElementById('bonus-result').innerHTML = renderBonusTable(example.run())
+  const example = operationsExamples[key]
+  document.getElementById('operations-desc').textContent = example.desc
+  document.getElementById('operations-code').textContent = example.code
+  document.getElementById('operations-impl').textContent = example.impl
+  document.getElementById('operations-result').innerHTML = renderOperationsTable(example.run())
 }
 
 const originalRender = render

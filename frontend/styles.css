@@ -180,7 +180,7 @@ body {
 
 
 
-.bonus-tabs {
+.operations-tabs {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -205,7 +205,7 @@ body {
   border-color: #e50914;
 }
 
-#bonus-desc {
+#operations-desc {
   background: #000;
   padding: 12px;
   border-radius: 8px;
@@ -214,7 +214,7 @@ body {
   overflow-y: auto;
 }
 
-#bonus-result {
+#operations-result {
   background: #000;
   padding: 12px;
   border-radius: 8px;
@@ -223,19 +223,19 @@ body {
   overflow-y: auto;
 }
 
-#bonus-result table {
+#operations-result table {
   width: 100%;
   border-collapse: collapse;
 }
 
-#bonus-result th {
+#operations-result th {
   color: #e50914;
   text-align: left;
   border-bottom: 1px solid #333;
   padding: 4px 8px;
 }
 
-#bonus-result td {
+#operations-result td {
   padding: 4px 8px;
   border-bottom: 1px solid #1a1a1a;
   color: #ccc;
