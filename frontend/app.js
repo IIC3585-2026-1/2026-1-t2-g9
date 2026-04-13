@@ -178,5 +178,37 @@ window.showOperations = (key) => {
   document.getElementById('operations-result').innerHTML = renderOperationsTable(example.run())
 }
 
+
+const resizer = document.getElementById('resizer')
+const infoSection = document.querySelector('.info-section')
+
+let isResizing = false
+let startX = 0
+let startWidth = 0
+
+resizer.addEventListener('mousedown', (e) => {
+  isResizing = true
+  startX = e.clientX
+  startWidth = infoSection.offsetWidth
+  resizer.classList.add('dragging')
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+})
+
+document.addEventListener('mousemove', (e) => {
+  if (!isResizing) return
+  const delta = startX - e.clientX  // invertido: mover izquierda = agrandar
+  const newWidth = Math.min(Math.max(startWidth + delta, 250), window.innerWidth * 0.6)
+  infoSection.style.width = newWidth + 'px'
+})
+
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return
+  isResizing = false
+  resizer.classList.remove('dragging')
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+})
+
 const originalRender = render
 fetch('../movies.json')

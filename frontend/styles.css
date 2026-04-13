@@ -19,25 +19,43 @@ body {
 
 /* 🔹 LAYOUT 2 COLUMNAS */
 .layout {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 20px;
-}
-
-/* IZQUIERDA */
-.movies-section {
   display: flex;
-  flex-direction: column;
+  gap: 0;
 }
 
-/* DERECHA */
+.movies-section {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20px;
+}
+
 .info-section {
   background: #181818;
   padding: 20px;
   border-radius: 10px;
-  height: fit-content;
   position: sticky;
   top: 20px;
+  height: 100vh;
+  overflow-y: auto;
+  width: 380px;
+  min-width: 250px;
+  max-width: 60vw;
+  flex-shrink: 0;
+}
+
+/* DIVISOR */
+.resizer {
+  width: 6px;
+  cursor: col-resize;
+  background: #222;
+  border-radius: 3px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.resizer:hover,
+.resizer.dragging {
+  background: #e50914;
 }
 
 .info-section h2 {
@@ -240,3 +258,4 @@ body {
   border-bottom: 1px solid #1a1a1a;
   color: #ccc;
 }
+
